@@ -12,7 +12,7 @@ S3_BUCKET = "github-backup"
 USE_SSL = true
 
 
-
+require 'trollop'
 require 'rubygems'
 require 'fileutils'
 require  'aws/s3'
@@ -111,6 +111,18 @@ end
 def backup_repos
   back_repos_from_arguments
 end
+
+opts = Trollop::options do
+  opt :n, 'dry-run', :default => false   # flag dry-run
+  opt :repo, 'Clone Repository', :type => :string
+  opt :bucket, 'Bucket name', :type => :string
+  opt :debug, 'debug flag', :default => false
+end
+
+puts "options: " if opts[:debug]
+p opts if opts[:debug]
+
+exit
 
 
 begin
