@@ -1,19 +1,7 @@
 #!/usr/bin/ruby
-
 #############################################################
-# Requirements:
-#				ruby + aws-s3 gem + colorize gem
-#				git
-#
 # Author: Akhil Bansal (http://webonrails.com)
 #############################################################
-
-
-#############################################################
-# CONFIGURATION SETTINGS: Please change your S3 credentials
-
-# AWS S3 credentials
-
 
 AWS_ACCESS_KEY_ID = "ACCESS_KEY"
 AWS_SECRET_ACCESS_KEY = "SECRET_KEY"
@@ -22,13 +10,6 @@ AWS_SECRET_ACCESS_KEY = "SECRET_KEY"
 S3_BUCKET = "github-backup"
 
 USE_SSL = true
-
-
-
-#############################################################
-# PLEASE DO NOT EDIT BELOW THIS LINE
-#############################################################
-
 
 require 'rubygems'
 require 'fileutils'
@@ -42,7 +23,7 @@ AWS::S3::Base.establish_connection!(
     :access_key_id     => AWS_ACCESS_KEY_ID,
     :secret_access_key => AWS_SECRET_ACCESS_KEY,
     :use_ssl => USE_SSL
-    
+
   )
 
 class Bucket < AWS::S3::Bucket
