@@ -122,9 +122,6 @@ end
 puts "options: " if opts[:debug]
 p opts if opts[:debug]
 
-exit
-
-
 begin
 	# create temp dir
 	Dir.mkdir(S3_BUCKET) rescue nil
