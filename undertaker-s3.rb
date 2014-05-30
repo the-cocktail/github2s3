@@ -11,6 +11,8 @@ S3_BUCKET = "github-backup"
 
 USE_SSL = true
 
+
+
 require 'rubygems'
 require 'fileutils'
 require  'aws/s3'
@@ -95,15 +97,6 @@ def s3bucket
 end
 
 
-def backup_repos_form_yaml 
-    if File.exist?(REPOSITORY_FILE)
-      repos = YAML.load_file(REPOSITORY_FILE)
-      repos.each{|repo| clone_and_upload_to_s3(:name => repo[0], :clone_url => repo[1]['git_clone_url']) }
-    else
-	    puts "Repository YAML file(./github_repos.yml) file not found".red
-    end
-end
-
 def back_repos_from_arguments
 	ARGV.each do |arg|
 		begin
@@ -115,14 +108,9 @@ def back_repos_from_arguments
 	end
 end
 
-
 def backup_repos
-	if ARGV.size > 0
-		back_repos_from_arguments
-	else
-		backup_repos_form_yaml
-	end
-end	
+  back_repos_from_arguments
+end
 
 
 begin
