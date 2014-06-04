@@ -23,10 +23,12 @@ $opts = Trollop::options do
   opt :aws_secret_access_key, 'AWS secret access key', :default => ENV['AWS_SECRET_ACCESS_KEY']
 end
 
+puts "options: " if $opts[:debug]
+p $opts if $opts[:debug]
 
 AWS::S3::Base.establish_connection!(
-    :access_key_id     => $opts[:access_key_id],
-    :secret_access_key => $opts[:secret_access_key],
+    :access_key_id     => $opts[:aws_access_key_id],
+    :secret_access_key => $opts[:aws_secret_access_key],
     :use_ssl => USE_SSL
   )
 
@@ -114,8 +116,6 @@ def backup_repos
   back_repos_from_arguments
 end
 
-puts "options: " if $opts[:debug]
-p $opts if $opts[:debug]
 
 Trollop::die :repo, ' Need a repo to clone' unless $opts[:repo]
 Trollop::die :aws_secret_access_key, ' Secret access key needed' unless $opts[:aws_secret_access_key]
