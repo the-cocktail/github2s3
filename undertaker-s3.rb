@@ -13,7 +13,6 @@ require 'yaml'
 require "colorize"
 
 $opts = Trollop::options do
-  opt :n, 'dry-run', :default => false   # flag dry-run
   opt :repo, 'Clone Repository', :type => :string
   opt :bucket, 'Bucket name', :type => :string
   opt :debug, 'debug flag', :default => false
