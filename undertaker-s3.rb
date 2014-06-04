@@ -100,33 +100,26 @@ def s3bucket
 	s3bucket = $opts[:bucket]
 end
 
-
-def back_repos_from_arguments
-	ARGV.each do |arg|
-		begin
-			name = arg.split('/').last
-			clone_and_upload_to_s3(:name => name, :clone_url => arg) 
-		rescue Exception => e
-			puts e.message.red
-		end
+def backup_repo
+	begin
+		name = $opts[:repo].split('/').last
+		clone_and_upload_to_s3(:name => name, :clone_url => $opts[:repo]) 
+	rescue Exception => e
+		puts e.message.red
 	end
-end
-
-def backup_repos
-  back_repos_from_arguments
 end
 
 
 Trollop::die :repo, ' Need a repo to clone' unless $opts[:repo]
 Trollop::die :aws_secret_access_key, ' Secret access key needed' unless $opts[:aws_secret_access_key]
-Trollop::die :aws_access_key_id, ' Access key needed' unless opts[:aws_access_key_id]
-Trollop::die :bucket, ' need a bucket to upload' unless opts[:bucket]
+Trollop::die :aws_access_key_id, ' Access key needed' unless $opts[:aws_access_key_id]
+Trollop::die :bucket, ' need a bucket to upload' unless $opts[:bucket]
 
 begin
 	# create temp dir
 	Dir.mkdir($opts[:bucket]) rescue nil
 	ensure_bucket_exists
-	backup_repos
+	backup_repo
 ensure	
 	# remove temp dir
 	delete_dir_and_sub_dir($opts[:bucket])
