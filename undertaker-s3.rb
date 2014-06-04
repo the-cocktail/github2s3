@@ -117,6 +117,8 @@ opts = Trollop::options do
   opt :repo, 'Clone Repository', :type => :string
   opt :bucket, 'Bucket name', :type => :string
   opt :debug, 'debug flag', :default => false
+  opt :aws_access_key_id, 'AWS access key ID', :default => ENV['AWS_ACCESS_KEY_ID']
+  opt :aws_secret_access_key, 'AWS secret access key', :default => ENV['AWS_SECRET_ACCESS_KEY']
 end
 
 puts "options: " if opts[:debug]
