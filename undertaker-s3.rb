@@ -12,8 +12,6 @@ require  'aws/s3'
 require 'yaml'
 require "colorize"
 
-REPOSITORY_FILE = File.dirname(__FILE__) + '/github_repos.yml'
-
 $opts = Trollop::options do
   opt :n, 'dry-run', :default => false   # flag dry-run
   opt :repo, 'Clone Repository', :type => :string
