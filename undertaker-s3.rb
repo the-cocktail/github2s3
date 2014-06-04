@@ -3,14 +3,7 @@
 # Author: Akhil Bansal (http://webonrails.com)
 #############################################################
 
-AWS_ACCESS_KEY_ID = "ACCESS_KEY"
-AWS_SECRET_ACCESS_KEY = "SECRET_KEY"
-
-# S3 bucket name to put dumps
-S3_BUCKET = "github-backup"
-
 USE_SSL = true
-
 
 require 'trollop'
 require 'rubygems'
@@ -22,10 +15,9 @@ require "colorize"
 REPOSITORY_FILE = File.dirname(__FILE__) + '/github_repos.yml'
 
 AWS::S3::Base.establish_connection!(
-    :access_key_id     => AWS_ACCESS_KEY_ID,
-    :secret_access_key => AWS_SECRET_ACCESS_KEY,
+    :access_key_id     => opts[:access_key_id],
+    :secret_access_key => opts[:secret_access_key],
     :use_ssl => USE_SSL
-
   )
 
 class Bucket < AWS::S3::Bucket
@@ -36,11 +28,11 @@ end
 
 def  clone_and_upload_to_s3(options)
 	 puts "\n\nChecking out #{options[:name]} ...".green
-	 clone_command = "cd #{S3_BUCKET} && git clone --bare #{options[:clone_url]} #{options[:name]}"
+	 clone_command = "cd #{opts[:bucket]} && git clone --bare #{options[:clone_url]} #{options[:name]}"
    puts clone_command.yellow
    system(clone_command)
 	 puts "\n Compressing #{options[:name]} ".green
-	 system("cd #{S3_BUCKET} && tar czf #{compressed_filename(options[:name])} #{options[:name]}")
+	 system("cd #{opts[:bucket]} && tar czf #{compressed_filename(options[:name])} #{options[:name]}")
 	 
 	 upload_to_s3(compressed_filename(options[:name]))
 	 
@@ -53,7 +45,7 @@ def  clone_and_upload_to_s3(options)
  def upload_to_s3(filename)
 	 begin
 		puts "** Uploading #{filename} to S3".green
-		path = File.join(S3_BUCKET, filename)
+		path = File.join(opts[:bucket], filename)
 		S3Object.store(filename, File.read(path), s3bucket)
 	 rescue Exception => e
 		puts "Could not upload #{filename} to S3".red
@@ -93,7 +85,7 @@ def ensure_bucket_exists
  end
 
 def s3bucket
-	s3bucket = S3_BUCKET 
+	s3bucket = opts[:bucket]
 end
 
 
@@ -126,11 +118,11 @@ p opts if opts[:debug]
 
 begin
 	# create temp dir
-	Dir.mkdir(S3_BUCKET) rescue nil
+	Dir.mkdir(opts[:bucket]) rescue nil
 	ensure_bucket_exists
 	backup_repos
 ensure	
 	# remove temp dir
-	delete_dir_and_sub_dir(S3_BUCKET)
+	delete_dir_and_sub_dir(opts[:bucket])
 end
 
