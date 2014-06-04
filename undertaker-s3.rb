@@ -43,26 +43,25 @@ def  clone_and_upload_to_s3(options)
    system(clone_command)
 	 puts "\n Compressing #{options[:name]} ".green
 	 system("cd #{$opts[:bucket]} && tar czf #{compressed_filename(options[:name])} #{options[:name]}")
-	 
+
 	 upload_to_s3(compressed_filename(options[:name]))
-	 
- end
- 
- def compressed_filename(str)
+end
+
+def compressed_filename(str)
 	 str+".tar.gz"
- end	 
- 
- def upload_to_s3(filename)
-	 begin
+end
+
+def upload_to_s3(filename)
+  begin
 		puts "** Uploading #{filename} to S3".green
 		path = File.join($opts[:bucket], filename)
 		S3Object.store(filename, File.read(path), s3bucket)
-	 rescue Exception => e
+	rescue Exception => e
 		puts "Could not upload #{filename} to S3".red
 		puts e.message.red
-	 end
- end
-  
+	end
+end
+
 def delete_dir_and_sub_dir(dir)
   Dir.foreach(dir) do |e|
     # Don't bother with . and ..
@@ -78,33 +77,32 @@ def delete_dir_and_sub_dir(dir)
 end
 
 def ensure_bucket_exists
-	 begin
-		bucket = Bucket.find(s3bucket)
-	 rescue AWS::S3::NoSuchBucket => e
-		puts "Bucket '#{s3bucket}' not found."
-		puts "Creating Bucket '#{s3bucket}'. "
-		
-		begin 
-			Bucket.create(s3bucket)
-			puts "Created Bucket '#{s3bucket}'. "
-		rescue Exception => e
-			puts e.message
-		end
-	 end
- 
- end
+  begin
+    bucket = Bucket.find(s3bucket)
+  rescue AWS::S3::NoSuchBucket => e
+    puts "Bucket '#{s3bucket}' not found."
+    puts "Creating Bucket '#{s3bucket}'. "
+
+    begin
+      Bucket.create(s3bucket)
+      puts "Created Bucket '#{s3bucket}'. "
+    rescue Exception => e
+      puts e.message
+    end
+  end
+end
 
 def s3bucket
-	s3bucket = $opts[:bucket]
+  s3bucket = $opts[:bucket]
 end
 
 def backup_repo
-	begin
-		name = $opts[:repo].split('/').last
-		clone_and_upload_to_s3(:name => name, :clone_url => $opts[:repo]) 
-	rescue Exception => e
-		puts e.message.red
-	end
+  begin
+    name = $opts[:repo].split('/').last
+    clone_and_upload_to_s3(:name => name, :clone_url => $opts[:repo])
+  rescue Exception => e
+    puts e.message.red
+  end
 end
 
 
@@ -114,12 +112,12 @@ Trollop::die :aws_access_key_id, ' Access key needed' unless $opts[:aws_access_k
 Trollop::die :bucket, ' need a bucket to upload' unless $opts[:bucket]
 
 begin
-	# create temp dir
-	Dir.mkdir($opts[:bucket]) rescue nil
-	ensure_bucket_exists
-	backup_repo
-ensure	
-	# remove temp dir
-	delete_dir_and_sub_dir($opts[:bucket])
+  # create temp dir
+  Dir.mkdir($opts[:bucket]) rescue nil
+  ensure_bucket_exists
+  backup_repo
+ensure
+  # remove temp dir
+  delete_dir_and_sub_dir($opts[:bucket])
 end
 
